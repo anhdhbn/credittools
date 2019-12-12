@@ -1,6 +1,11 @@
 package util
 
-func Create_acc(code string, start int, end)([]string){
+import (
+	"fmt"
+	"time"
+)
+
+func Create_acc(code string, start int, end int)([]string){
 	// end: max is 5
 	// start: 0
 	var result []string
