@@ -28,8 +28,8 @@ type ResponseVnu struct {
 }
 
 
-func Dach_sach_mon_hoc_da_dang_ky(client *http.Client) (string) {
-	path := "/dang-ky-mon-hoc-nganh-1"
+func Dach_sach_mon_hoc_da_dang_ky(client *http.Client, user_ User) (string) {
+	path := fmt.Sprintf("/danh-sach-mon-hoc-da-dang-ky/%s",  user_.Type_login)
 	req := create_request(path, "POST", true, "")
 	resp, html := execute_request(client, req)
 	if (resp == nil) {
