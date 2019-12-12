@@ -1,6 +1,6 @@
 package util
 
-func create_acc(code string, start int, end)([]string){
+func Create_acc(code string, start int, end)([]string){
 	// end: max is 5
 	// start: 0
 	var result []string
