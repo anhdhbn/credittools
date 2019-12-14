@@ -161,3 +161,7 @@ func get_token(html string) (string){
 func Check_login(html string) (bool) {
 	return strings.Contains(html, "/Account/Logout")
 }
+
+func Check_is_in_login_screen(html string) (bool) {
+	return strings.Contains(html, `$("#LoginName").focus();`)
+}
