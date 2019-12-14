@@ -146,7 +146,7 @@ func Init_http(timeout_second int) (*http.Client){
     if err != nil {
         log.Fatal(err)
     }
-    client := http.Client{Jar: jar, Timeout: time.Second * timeout_second}
+    client := http.Client{Jar: jar, Timeout: time.Duration(timeout_second) * time.Second}
 	return &client
 }
 
