@@ -13,6 +13,7 @@ import (
 	"net/http/cookiejar"
 	"golang.org/x/net/publicsuffix"
 	"encoding/json"
+	"time"
 )
 
 type User struct {
@@ -137,7 +138,7 @@ func create_request(path string, method string, post_type bool, params string) (
 	return request
 }
 
-func Init_http() (*http.Client){
+func Init_http(timeout_second int) (*http.Client){
 	options := cookiejar.Options{
         PublicSuffixList: publicsuffix.List,
     }
@@ -145,7 +146,7 @@ func Init_http() (*http.Client){
     if err != nil {
         log.Fatal(err)
     }
-    client := http.Client{Jar: jar}
+    client := http.Client{Jar: jar, Timeout: time.Second * timeout_second}
 	return &client
 }
 
