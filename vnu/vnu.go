@@ -19,7 +19,7 @@ import (
 type User struct {
     Mssv string
 	Pass string
-	Type_login string
+	TypeLogin string
 	Mhp string
 }
 
@@ -29,45 +29,45 @@ type ResponseVnu struct {
 }
 
 
-func Dach_sach_mon_hoc_da_dang_ky(client *http.Client, user_ User) (string) {
-	path := fmt.Sprintf("/danh-sach-mon-hoc-da-dang-ky/%s",  user_.Type_login)
-	req := create_request(path, "POST", true, "")
-	resp, html := execute_request(client, req)
+func DachSachMonHocDaDangKy(client *http.Client, user_ User) (string) {
+	path := fmt.Sprintf("/danh-sach-mon-hoc-da-dang-ky/%s",  user_.TypeLogin)
+	req := createRequest(path, "POST", true, "")
+	resp, html := executeRequest(client, req)
 	if (resp == nil) {
 		return ""
 	}
 	return html
 }
 
-func Xac_nhan_dang_ky(client *http.Client, user_ User) (bool) {
-	path := fmt.Sprintf("/xac-nhan-dang-ky/%s", user_.Type_login)
-	req := create_request(path, "POST", true, "")
-	resp, html := execute_request(client, req)
+func XacNhanDangKy(client *http.Client, user_ User) (bool) {
+	path := fmt.Sprintf("/xac-nhan-dang-ky/%s", user_.TypeLogin)
+	req := createRequest(path, "POST", true, "")
+	resp, html := executeRequest(client, req)
 	if (resp == nil) {
 		return false
 	}
-	obj := parse_json(string(html))
+	obj := parseJson(string(html))
 	log.Println(user_.Mssv, user_.Mhp, obj)
 	return obj.Success
 }
 
 
 
-func Dang_ky_mon_hoc(client *http.Client, user_ User) (bool) {
-	path := fmt.Sprintf("/chon-mon-hoc/%s/%s/%s", user_.Mhp, user_.Type_login, "2")
-	req := create_request(path, "POST", true, "")
-	resp, html := execute_request(client, req)
+func DangKyMonHoc(client *http.Client, user_ User) (bool) {
+	path := fmt.Sprintf("/chon-mon-hoc/%s/%s/%s", user_.Mhp, user_.TypeLogin, "2")
+	req := createRequest(path, "POST", true, "")
+	resp, html := executeRequest(client, req)
 	if (resp == nil) {
 		return false
 	}
-	obj := parse_json(string(html))
+	obj := parseJson(string(html))
 	return obj.Success
 }
 
-func Get_danh_sach_mon_hoc(client *http.Client, user_ User) (string) {
-	path := fmt.Sprintf("/danh-sach-mon-hoc/%s/%s", user_.Type_login, "2")
-	req := create_request(path, "POST", true, "")
-	resp, html := execute_request(client, req)
+func GetDanhSachMonHoc(client *http.Client, user_ User) (string) {
+	path := fmt.Sprintf("/danh-sach-mon-hoc/%s/%s", user_.TypeLogin, "2")
+	req := createRequest(path, "POST", true, "")
+	resp, html := executeRequest(client, req)
 	if (resp == nil) {
 		return ""
 	}
@@ -77,22 +77,22 @@ func Get_danh_sach_mon_hoc(client *http.Client, user_ User) (string) {
 
 func Login(client *http.Client, user_ User, check bool) (bool){
 	if (check) {
-		req := create_request("/", "GET", false , "")
-		resp, html := execute_request(client, req)
-		if (resp != nil && Check_login(html)) {
+		req := createRequest("/", "GET", false , "")
+		resp, html := executeRequest(client, req)
+		if (resp != nil && CheckLogin(html)) {
 			return true
 		}
 	}
 
 
-	req := create_request("/dang-nhap", "GET", false , "")
-	resp, html := execute_request(client, req)
+	req := createRequest("/dang-nhap", "GET", false , "")
+	resp, html := executeRequest(client, req)
 	if  (resp == nil) {
 		return false
 	}
 
 	
-	token := get_token(html)
+	token := getToken(html)
 	if (token == "")  {
 		return false
 	}
@@ -101,12 +101,12 @@ func Login(client *http.Client, user_ User, check bool) (bool){
     data.Set("LoginName", user_.Mssv)
 	data.Set("Password", user_.Pass)
 
-	req = create_request("/dang-nhap", "POST", true , data.Encode())
-	resp, html = execute_request(client, req)
-	return Check_login(html)
+	req = createRequest("/dang-nhap", "POST", true , data.Encode())
+	resp, html = executeRequest(client, req)
+	return CheckLogin(html)
 }
 
-func parse_json(data string) (ResponseVnu) {
+func parseJson(data string) (ResponseVnu) {
 	var resp ResponseVnu
 	if (strings.Contains(data, `success`)){
 		json.Unmarshal([]byte(data), &resp)
@@ -116,7 +116,7 @@ func parse_json(data string) (ResponseVnu) {
 	}
 }
 
-func execute_request(client *http.Client, request *http.Request) (*http.Response, string){
+func executeRequest(client *http.Client, request *http.Request) (*http.Response, string){
 	response, err := client.Do(request)
     if err != nil {
 		return nil, ""
@@ -127,18 +127,18 @@ func execute_request(client *http.Client, request *http.Request) (*http.Response
     }
 }
 
-func create_request(path string, method string, post_type bool, params string) (*http.Request){
+func createRequest(path string, method string, postType bool, params string) (*http.Request){
 	link := fmt.Sprintf("http://dangkyhoc.vnu.edu.vn%s", path)
 	request, _ := http.NewRequest(method, link, strings.NewReader(params))
 	
-	if (post_type) {
+	if (postType) {
 		request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 		request.Header.Add("Content-Length", strconv.Itoa(len(params)))
 	}
 	return request
 }
 
-func Init_http(timeout_second int) (*http.Client){
+func InitHTTP(timeoutSecond int) (*http.Client){
 	options := cookiejar.Options{
         PublicSuffixList: publicsuffix.List,
     }
@@ -146,11 +146,11 @@ func Init_http(timeout_second int) (*http.Client){
     if err != nil {
         log.Fatal(err)
     }
-    client := http.Client{Jar: jar, Timeout: time.Duration(timeout_second) * time.Second}
+    client := http.Client{Jar: jar, Timeout: time.Duration(timeoutSecond) * time.Second}
 	return &client
 }
 
-func get_token(html string) (string){
+func getToken(html string) (string){
 	r := regexp.MustCompile(`__RequestVerificationToken.*ue="(.*?)"`)
 	res := r.FindStringSubmatch(html)
 	if (len(res) != 2) {
@@ -159,10 +159,10 @@ func get_token(html string) (string){
 	return res[1]
 }
 
-func Check_login(html string) (bool) {
+func CheckLogin(html string) (bool) {
 	return strings.Contains(html, "/Account/Logout")
 }
 
-func Check_is_in_login_screen(html string) (bool) {
+func CheckIsInLoginScreen(html string) (bool) {
 	return strings.Contains(html, `$("#LoginName").focus();`)
 }
