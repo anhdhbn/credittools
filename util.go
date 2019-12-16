@@ -3,6 +3,8 @@ package util
 import (
 	"fmt"
 	"time"
+	"strings"
+	"github.com/PuerkitoBio/goquery"
 )
 
 func Create_acc(code string, start int, end int)([]string){
@@ -36,4 +38,49 @@ func get_mssv(i int, head string)(string) {
 	} else {
 		return fmt.Sprintf("%s%v", head, i)
 	}
+}
+
+func GetRowIndexFromStr(html string, creditname string) (string, bool){
+	buffer := strings.NewReader(html)
+	return GetRowIndexFromReader(buffer, creditname)
+}
+
+func GetRowIndexFromReader(buffer *strings.Reader, creditname string) (string, bool) {
+	doc, err := goquery.NewDocumentFromReader(buffer)
+	if err != nil {
+		return "", false
+	}
+	return GetRowIndexFromDoc(doc, creditname)
+}
+
+func GetRowIndexFromDoc(doc *goquery.Document, creditname string) (string, bool) {
+	var rowIndex string
+	var exists bool
+	rowIndex = ""
+	exists = false
+	doc.Find("tr").Each(func(i int, s *goquery.Selection) {
+		
+		var credit string
+		creditQuery := s.Find("td:nth-child(5)")
+		
+		if (!strings.Contains(creditQuery.Text(), "(")) {
+			credit  = creditQuery.Text()
+		} else {
+			creditQuery.Children().Remove()
+			credit =  creditQuery.Text()
+		}
+		credit = strings.Replace(credit, "(", "", -1)
+		credit = strings.Replace(credit, ")", "", -1)
+		credit = strings.TrimSpace(credit)
+		temp := strings.Split(credit, " ")
+		if (len(temp) == 3) {
+			credit = fmt.Sprintf("%s%s %s", temp[0], temp[1], temp[2])
+		}
+		if (strings.EqualFold(credit, creditname)) {
+			input := s.Find("td input[type='checkbox']")
+			rowIndex, exists = input.Attr("data-rowindex")
+			return
+		}
+	})
+	return rowIndex, exists
 }
