@@ -7,6 +7,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
+// CreateAcc Generate acc vnu
 func CreateAcc(code string, start int, end int)([]string){
 	// end: max is 5
 	// start: 0
@@ -40,20 +41,30 @@ func getMssv(i int, head string)(string) {
 	}
 }
 
+// GetRowIndexFromStr get rowindex from table
 func GetRowIndexFromStr(html string, creditname string)(string, bool){
+	html = fmt.Sprintf(`<html>
+    <body>
+        <table>
+            <tbody>
+                %s
+            </tbody>
+        </table>
+    </body>
+</html>`, html)
 	buffer := strings.NewReader(html)
-	return GetRowIndexFromReader(buffer, creditname)
+	return getRowIndexFromReader(buffer, creditname)
 }
 
-func GetRowIndexFromReader(buffer *strings.Reader, creditname string) (string, bool) {
+func getRowIndexFromReader(buffer *strings.Reader, creditname string) (string, bool) {
 	doc, err := goquery.NewDocumentFromReader(buffer)
 	if err != nil {
 		return "", false
 	}
-	return GetRowIndexFromDoc(doc, creditname)
+	return getRowIndexFromDoc(doc, creditname)
 }
 
-func GetRowIndexFromDoc(doc *goquery.Document, creditname string) (string, bool) {
+func getRowIndexFromDoc(doc *goquery.Document, creditname string) (string, bool) {
 	var rowIndex string
 	var exists bool
 	rowIndex = ""
