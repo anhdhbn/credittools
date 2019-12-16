@@ -41,9 +41,9 @@ func getMssv(i int, head string)(string) {
 	}
 }
 
-// GetRowIndexFromStr get rowindex from table
-func GetRowIndexFromStr(html string, creditname string)(string, bool){
-	html = fmt.Sprintf(`<html>
+// GetRowIndexFromTable get rowindex from table
+func GetRowIndexFromTable(table string, creditname string)(string, bool){
+	html := fmt.Sprintf(`<html>
     <body>
         <table>
             <tbody>
@@ -51,7 +51,12 @@ func GetRowIndexFromStr(html string, creditname string)(string, bool){
             </tbody>
         </table>
     </body>
-</html>`, html)
+</html>`, table)
+	return getRowIndexFromStr(html, creditname)
+}
+
+
+func getRowIndexFromStr(html string, creditname string)(string, bool){
 	buffer := strings.NewReader(html)
 	return getRowIndexFromReader(buffer, creditname)
 }
