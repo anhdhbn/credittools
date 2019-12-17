@@ -16,56 +16,24 @@ import (
 	"time"
 )
 
+// User containt Mssv Pass TypeLogin and Credit
 type User struct {
-    Mssv string
+    ID string
 	Pass string
 	TypeLogin string
-	Mhp string
+	Credit string
 }
 
+
+// ResponseVnu is only parse result
 type ResponseVnu struct {
 	Success bool
 	Message string
 }
 
-
-func DachSachMonHocDaDangKy(client *http.Client, user_ User) (string) {
-	path := fmt.Sprintf("/danh-sach-mon-hoc-da-dang-ky/%s",  user_.TypeLogin)
-	req := createRequest(path, "POST", true, "")
-	resp, html := executeRequest(client, req)
-	if (resp == nil) {
-		return ""
-	}
-	return html
-}
-
-func XacNhanDangKy(client *http.Client, user_ User) (bool) {
-	path := fmt.Sprintf("/xac-nhan-dang-ky/%s", user_.TypeLogin)
-	req := createRequest(path, "POST", true, "")
-	resp, html := executeRequest(client, req)
-	if (resp == nil) {
-		return false
-	}
-	obj := parseJson(string(html))
-	log.Println(user_.Mssv, user_.Mhp, obj)
-	return obj.Success
-}
-
-
-
-func DangKyMonHoc(client *http.Client, user_ User) (bool) {
-	path := fmt.Sprintf("/chon-mon-hoc/%s/%s/%s", user_.Mhp, user_.TypeLogin, "2")
-	req := createRequest(path, "POST", true, "")
-	resp, html := executeRequest(client, req)
-	if (resp == nil) {
-		return false
-	}
-	obj := parseJson(string(html))
-	return obj.Success
-}
-
-func GetDanhSachMonHoc(client *http.Client, user_ User) (string) {
-	path := fmt.Sprintf("/danh-sach-mon-hoc/%s/%s", user_.TypeLogin, "2")
+// DachSachMonHocDaDangKy is get list registration
+func DachSachMonHocDaDangKy(client *http.Client, user User) (string) {
+	path := fmt.Sprintf("/danh-sach-mon-hoc-da-dang-ky/%s",  user.TypeLogin)
 	req := createRequest(path, "POST", true, "")
 	resp, html := executeRequest(client, req)
 	if (resp == nil) {
@@ -75,7 +43,45 @@ func GetDanhSachMonHoc(client *http.Client, user_ User) (string) {
 }
 
 
-func Login(client *http.Client, user_ User, check bool) (bool){
+// XacNhanDangKy is confirm registration
+func XacNhanDangKy(client *http.Client, user User) (bool) {
+	path := fmt.Sprintf("/xac-nhan-dang-ky/%s", user.TypeLogin)
+	req := createRequest(path, "POST", true, "")
+	resp, html := executeRequest(client, req)
+	if (resp == nil) {
+		return false
+	}
+	obj := parseJSON(string(html))
+	log.Println(user.ID, user.Credit, obj)
+	return obj.Success
+}
+
+
+// DangKyMonHoc is register a subject
+func DangKyMonHoc(client *http.Client, user User) (bool) {
+	path := fmt.Sprintf("/chon-mon-hoc/%s/%s/%s", user.Credit, user.TypeLogin, "2")
+	req := createRequest(path, "POST", true, "")
+	resp, html := executeRequest(client, req)
+	if (resp == nil) {
+		return false
+	}
+	obj := parseJSON(string(html))
+	return obj.Success
+}
+
+// GetDanhSachMonHoc is get list credit
+func GetDanhSachMonHoc(client *http.Client, user User) (string) {
+	path := fmt.Sprintf("/danh-sach-mon-hoc/%s/%s", user.TypeLogin, "2")
+	req := createRequest(path, "POST", true, "")
+	resp, html := executeRequest(client, req)
+	if (resp == nil) {
+		return ""
+	}
+	return html
+}
+
+// Login by http
+func Login(client *http.Client, user User, check bool) (bool){
 	if (check) {
 		req := createRequest("/", "GET", false , "")
 		resp, html := executeRequest(client, req)
@@ -98,15 +104,15 @@ func Login(client *http.Client, user_ User, check bool) (bool){
 	}
 	data := url.Values{}
     data.Set("__RequestVerificationToken", token)
-    data.Set("LoginName", user_.Mssv)
-	data.Set("Password", user_.Pass)
+    data.Set("LoginName", user.ID)
+	data.Set("Password", user.Pass)
 
 	req = createRequest("/dang-nhap", "POST", true , data.Encode())
 	resp, html = executeRequest(client, req)
 	return CheckLogin(html)
 }
 
-func parseJson(data string) (ResponseVnu) {
+func parseJSON(data string) (ResponseVnu) {
 	var resp ResponseVnu
 	if (strings.Contains(data, `success`)){
 		json.Unmarshal([]byte(data), &resp)
@@ -138,6 +144,7 @@ func createRequest(path string, method string, postType bool, params string) (*h
 	return request
 }
 
+// InitHTTP is  init http
 func InitHTTP(timeoutSecond int) (*http.Client){
 	options := cookiejar.Options{
         PublicSuffixList: publicsuffix.List,
@@ -159,10 +166,12 @@ func getToken(html string) (string){
 	return res[1]
 }
 
+// CheckLogin is check login
 func CheckLogin(html string) (bool) {
 	return strings.Contains(html, "/Account/Logout")
 }
 
+// CheckIsInLoginScreen is check in login screen
 func CheckIsInLoginScreen(html string) (bool) {
 	return strings.Contains(html, `$("#LoginName").focus();`)
 }
