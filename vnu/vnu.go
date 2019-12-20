@@ -14,7 +14,6 @@ import (
 	"golang.org/x/net/publicsuffix"
 	"encoding/json"
 	"time"
-	"strconv"
 )
 
 // User containt Mssv Pass TypeLogin and Credit
