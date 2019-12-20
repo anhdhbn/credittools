@@ -14,6 +14,7 @@ import (
 	"golang.org/x/net/publicsuffix"
 	"encoding/json"
 	"time"
+	"strconv"
 )
 
 // User containt Mssv Pass TypeLogin and Credit
@@ -22,6 +23,7 @@ type User struct {
 	Pass string
 	TypeLogin string
 	Credit string
+	Data string
 }
 
 
@@ -59,7 +61,17 @@ func XacNhanDangKy(client *http.Client, user User) (bool) {
 
 // DangKyMonHoc is register a subject
 func DangKyMonHoc(client *http.Client, user User) (bool) {
-	path := fmt.Sprintf("/chon-mon-hoc/%s/%s/%s", user.Credit, user.TypeLogin, "2")
+	var rowIndex string
+	var success bool
+	if _, err := strconv.ParseUint(user.Credit, 10, 64); err == nil {
+		rowIndex = user.Credit
+	} else {
+		if rowIndex, success = GetRowIndexFromTable(user.Data, user.Credit); !success {
+			return false
+		}
+	}
+
+	path := fmt.Sprintf("/chon-mon-hoc/%s/%s/%s", rowIndex, user.TypeLogin, "2")
 	req := createRequest(path, "POST", true, "")
 	resp, html := executeRequest(client, req)
 	if (resp == nil) {

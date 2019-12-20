@@ -5,6 +5,7 @@ import (
 	"time"
 	"strings"
 	"github.com/PuerkitoBio/goquery"
+	"strconv"
 )
 
 // CreateAcc Generate acc vnu
@@ -91,6 +92,13 @@ func getRowIndexFromDoc(doc *goquery.Document, creditname string) (string, bool)
 		temp := strings.Split(credit, " ")
 		if (len(temp) == 3) {
 			credit = fmt.Sprintf("%s%s %s", temp[0], temp[1], temp[2])
+		} else {
+			// if (len(temp[1]) <= 4) {
+			// 	credit = fmt.Sprintf("%s%s", temp[0], temp[1])
+			// }
+			if _, err := strconv.ParseInt(temp[1],10,64); err == nil {
+				credit = fmt.Sprintf("%s%s", temp[0], temp[1])
+			}
 		}
 		if (strings.EqualFold(credit, creditname)) {
 			input := s.Find("td input[type='checkbox']")
