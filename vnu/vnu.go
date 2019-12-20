@@ -58,6 +58,18 @@ func XacNhanDangKy(client *http.Client, user User) (bool) {
 }
 
 
+// DangKyMonHocFast is register a subject
+func DangKyMonHocFast(client *http.Client, user User, rowIndex string) (bool) {
+	path := fmt.Sprintf("/chon-mon-hoc/%s/%s/%s", rowIndex, user.TypeLogin, "2")
+	req := createRequest(path, "POST", true, "")
+	resp, html := executeRequest(client, req)
+	if (resp == nil) {
+		return false
+	}
+	obj := parseJSON(string(html))
+	return obj.Success
+}
+
 // DangKyMonHoc is register a subject
 func DangKyMonHoc(client *http.Client, user User) (bool) {
 	var rowIndex string
@@ -69,15 +81,7 @@ func DangKyMonHoc(client *http.Client, user User) (bool) {
 			return false
 		}
 	}
-
-	path := fmt.Sprintf("/chon-mon-hoc/%s/%s/%s", rowIndex, user.TypeLogin, "2")
-	req := createRequest(path, "POST", true, "")
-	resp, html := executeRequest(client, req)
-	if (resp == nil) {
-		return false
-	}
-	obj := parseJSON(string(html))
-	return obj.Success
+	return DangKyMonHocFast(client, user, rowIndex)
 }
 
 // GetDanhSachMonHoc is get list credit

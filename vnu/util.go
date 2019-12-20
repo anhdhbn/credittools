@@ -96,7 +96,7 @@ func getRowIndexFromDoc(doc *goquery.Document, creditname string) (string, bool)
 			// if (len(temp[1]) <= 4) {
 			// 	credit = fmt.Sprintf("%s%s", temp[0], temp[1])
 			// }
-			if _, err := strconv.ParseInt(temp[1],10,64); err == nil {
+			if _, err := strconv.ParseInt(temp[0],10,64); err == nil {
 				credit = fmt.Sprintf("%s%s", temp[0], temp[1])
 			}
 		}
